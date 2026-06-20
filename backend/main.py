@@ -37,35 +37,12 @@ app.add_middleware(
 db = None
 use_mock_data = False
 
-# Try initializing Firebase
-cred_path = os.getenv("FIREBASE_CREDENTIALS")
-if not cred_path:
-    # Look for fallback credentials in the workspace
-    potential_path = os.path.join(os.path.dirname(__file__), "firebase-credentials.json")
-    if os.path.exists(potential_path):
-        cred_path = potential_path
-
 try:
-    if cred_path and os.path.exists(cred_path):
-        logger.info(f"Initializing Firebase with credentials from: {cred_path}")
-        cred = credentials.Certificate(cred_path)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
-        logger.info("Firebase Admin SDK initialized successfully with credentials file.")
-    else:
-        logger.info("No service account credentials file found. Attempting application default credentials...")
-        try:
-            firebase_admin.initialize_app()
-            db = firestore.client()
-            logger.info("Firebase Admin SDK initialized successfully with default credentials.")
-        except Exception as default_err:
-            logger.warning(
-                f"Could not initialize with Application Default Credentials: {default_err}. "
-                "Running in Mock Fallback mode. Set FIREBASE_CREDENTIALS to connect to a live database."
-            )
-            use_mock_data = True
+    from firebase_config import get_firestore_client
+    db = get_firestore_client()
+    logger.info("Firestore client retrieved successfully via firebase_config.")
 except Exception as e:
-    logger.error(f"Error during Firebase initialization: {e}. Running in Mock Fallback mode.")
+    logger.error(f"Failed to initialize Firestore via firebase_config: {e}. Running in Mock Fallback mode.")
     use_mock_data = True
 
 # --- Realistic Mock Data for Fallback/Development Mode ---
