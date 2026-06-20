@@ -24,6 +24,11 @@ def get_firestore_client():
     # Check if Firebase is already initialized
     if not firebase_admin._apps:
         key_path = os.getenv("FIREBASE_KEY_PATH", "firebase-key.json")
+        if not os.path.isabs(key_path) and not os.path.exists(key_path):
+            potential_path = os.path.abspath(os.path.join(os.path.dirname(__file__), key_path))
+            if os.path.exists(potential_path):
+                key_path = potential_path
+        
         logger.info(f"Initializing Firebase Admin SDK. Credentials path: {key_path}")
 
         if os.path.exists(key_path):
