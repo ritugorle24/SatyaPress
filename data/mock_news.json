@@ -1,0 +1,167 @@
+[
+  {
+    "id": 1,
+    "title": "New Labor Reforms: Empowering Workers or Hurting Corporate Growth?",
+    "source": "The Citizen Daily",
+    "date": "2026-06-18",
+    "category": "Economy",
+    "bias": "Left",
+    "credibility_score": 82,
+    "sensationalism_score": 40,
+    "bias_explanation": "The article focuses heavily on corporate exploitation and workers' rights, viewing the policy changes through a labor-first lens."
+  },
+  {
+    "id": 2,
+    "title": "Market Rally: Government Policies Fuel Unprecedented Industrial Growth",
+    "source": "India Business Post",
+    "date": "2026-06-19",
+    "category": "Economy",
+    "bias": "Right",
+    "credibility_score": 85,
+    "sensationalism_score": 30,
+    "bias_explanation": "The piece adopts an optimistic tone regarding government deregulation, praising market-friendly reforms while downplaying potential wage inequality."
+  },
+  {
+    "id": 3,
+    "title": "Government Announces New Educational Policy to Be Implemented Next Month",
+    "source": "National News Agency",
+    "date": "2026-06-20",
+    "category": "Education",
+    "bias": "Center",
+    "credibility_score": 95,
+    "sensationalism_score": 10,
+    "bias_explanation": "A purely descriptive, objective report detailing the key facts, implementation timeline, and statements from both officials and critics."
+  },
+  {
+    "id": 4,
+    "title": "Welfare Scheme Fails to Reach Remote Villages in Tribal Belts",
+    "source": "Ground Reality India",
+    "date": "2026-06-15",
+    "category": "Social Issues",
+    "bias": "Left",
+    "credibility_score": 88,
+    "sensationalism_score": 35,
+    "bias_explanation": "Emphasizes systemic failures, government neglect, and the plight of marginalized communities without giving significant weight to bureaucratic bottlenecks."
+  },
+  {
+    "id": 5,
+    "title": "Bold Tax Reforms Unleash Entrepreneurial Wave Across India's Metros",
+    "source": "Swarajya Financial",
+    "date": "2026-06-17",
+    "category": "Economy",
+    "bias": "Right",
+    "credibility_score": 80,
+    "sensationalism_score": 55,
+    "bias_explanation": "Frames tax reductions as a major triumph of the current administration, linking them directly to job creation and entrepreneurship."
+  },
+  {
+    "id": 6,
+    "title": "Supreme Court Asks Center for Detailed Report on Forest Land Evictions",
+    "source": "Legal Chronicle",
+    "date": "2026-06-20",
+    "category": "Law & Order",
+    "bias": "Center",
+    "credibility_score": 98,
+    "sensationalism_score": 15,
+    "bias_explanation": "Focuses strictly on court proceedings, quoting the judges and the government's legal representatives verbatim."
+  },
+  {
+    "id": 7,
+    "title": "CRISIS! Inflation Crushes Middle Class While Corporates Get Tax Breaks",
+    "source": "People's Voice",
+    "date": "2026-06-19",
+    "category": "Economy",
+    "bias": "Left",
+    "credibility_score": 65,
+    "sensationalism_score": 85,
+    "bias_explanation": "High sensationalism with loaded emotional language, attributing inflation solely to corporate greed and government collusion."
+  },
+  {
+    "id": 8,
+    "title": "Historic Cultural Center Inaugurated; Restoration of National Heritage Complete",
+    "source": "Bharat Times",
+    "date": "2026-06-14",
+    "category": "Culture",
+    "bias": "Right",
+    "credibility_score": 78,
+    "sensationalism_score": 60,
+    "bias_explanation": "Frames the restoration project in strongly nationalist terms, highlighting cultural pride while ignoring architectural criticism or budget concerns."
+  },
+  {
+    "id": 9,
+    "title": "Monsoon Rainfall Reaches Normal Levels Across Central India, Says IMD",
+    "source": "Weather & Agri Review",
+    "date": "2026-06-20",
+    "category": "Environment",
+    "bias": "Center",
+    "credibility_score": 99,
+    "sensationalism_score": 5,
+    "bias_explanation": "Presents meteorological data directly from the official weather agency without editorial slant."
+  },
+  {
+    "id": 10,
+    "title": "Protests Erupt in Capital Over Controversial Environment Clearance Bill",
+    "source": "The Independent Post",
+    "date": "2026-06-16",
+    "category": "Environment",
+    "bias": "Left",
+    "credibility_score": 84,
+    "sensationalism_score": 50,
+    "bias_explanation": "Focuses primarily on environmental activists and tribal communities protesting, framing the bill as pro-corporate at the cost of ecology."
+  },
+  {
+    "id": 11,
+    "title": "National Security Tightened Along Border Following High-Level Defense Meeting",
+    "source": "Patriot News",
+    "date": "2026-06-19",
+    "category": "Defense",
+    "bias": "Right",
+    "credibility_score": 89,
+    "sensationalism_score": 45,
+    "bias_explanation": "Supportive of the military's preparedness and the government's strategic decisions, emphasizing strong national security."
+  },
+  {
+    "id": 12,
+    "title": "Reserve Bank of India Keeps Repo Rate Unchanged at 6.5%",
+    "source": "Mint Daily",
+    "date": "2026-06-18",
+    "category": "Economy",
+    "bias": "Center",
+    "credibility_score": 97,
+    "sensationalism_score": 8,
+    "bias_explanation": "Objective financial reporting detailing the central bank's decision, policy stance, and subsequent market reactions."
+  },
+  {
+    "id": 13,
+    "title": "Privatization of Public Sector Banks is a Recipe for Economic Disaster",
+    "source": "Democratic Forum",
+    "date": "2026-06-15",
+    "category": "Economy",
+    "bias": "Left",
+    "credibility_score": 72,
+    "sensationalism_score": 70,
+    "bias_explanation": "Criticizes the privatization move using negative adjectives, arguing it will lead to financial instability and exclude rural savers."
+  },
+  {
+    "id": 14,
+    "title": "New Digital India Initiative Speeds Up Passport Approvals",
+    "source": "Rising India",
+    "date": "2026-06-17",
+    "category": "Technology",
+    "bias": "Right",
+    "credibility_score": 91,
+    "sensationalism_score": 25,
+    "bias_explanation": "Highlights the efficiency gains and administrative success of a government-led digitisation project."
+  },
+  {
+    "id": 15,
+    "title": "Health Ministry Issues Advisory on Rising Dengue Cases in Southern States",
+    "source": "MedIndia Bulletin",
+    "date": "2026-06-20",
+    "category": "Health",
+    "bias": "Center",
+    "credibility_score": 96,
+    "sensationalism_score": 20,
+    "bias_explanation": "Reports on government-issued health guidelines, statistics, and preventive measures in a neutral, informative tone."
+  }
+]
