@@ -1,7 +1,6 @@
 import '../layer2/buried_stories_screen.dart';
 import 'package:flutter/material.dart';
 import '../news_feed/news_feed_screen.dart';
-import '../search/search_screen.dart';
 import '../layer3/claim_clash_screen.dart';
 import '../layer3/accountability_leaderboard_screen.dart';
 
@@ -18,7 +17,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const NewsFeedScreen(),
-    const SearchScreen(),
     const BuriedStoriesScreen(),
     const ClaimClashScreen(),
     const AccountabilityLeaderboardScreen(),
@@ -41,20 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Feed',
           ),
           NavigationDestination(
-            icon: Icon(Icons.search_rounded),
-            label: 'Search',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.insights_rounded),
-            label: 'Coverage',
+            label: 'Buried Stories',
           ),
           NavigationDestination(
             icon: Icon(Icons.compare_arrows_rounded),
-            label: 'Clash',
+            label: 'Claim Clash',
           ),
           NavigationDestination(
             icon: Icon(Icons.leaderboard_rounded),
-            label: 'Registry',
+            label: 'Accountability Leaderboard',
           ),
         ],
       ),

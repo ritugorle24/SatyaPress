@@ -4,7 +4,12 @@ import '../../widgets/claim_card.dart';
 
 /// ClaimClashScreen displays public statements of politicians and officials compared directly to verified facts.
 class ClaimClashScreen extends StatefulWidget {
-  const ClaimClashScreen({super.key});
+  final ClaimClashItem? claim;
+
+  const ClaimClashScreen({
+    super.key,
+    this.claim,
+  });
 
   @override
   State<ClaimClashScreen> createState() => _ClaimClashScreenState();
@@ -16,6 +21,10 @@ class _ClaimClashScreenState extends State<ClaimClashScreen> {
   final List<String> _filterOptions = ['All', 'True', 'False', 'Misleading'];
 
   List<ClaimClashItem> get _filteredClaims {
+    if (widget.claim != null) {
+      return [widget.claim!];
+    }
+
     final claims = MockClaimDatabase.claims;
     if (_selectedFilter == 'All') {
       return claims;
@@ -29,11 +38,12 @@ class _ClaimClashScreenState extends State<ClaimClashScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final results = _filteredClaims;
+    final isSingleClaim = widget.claim != null;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Claim Clash',
+          isSingleClaim ? 'Statement Verification' : 'Claim Clash',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.primary,
@@ -41,69 +51,79 @@ class _ClaimClashScreenState extends State<ClaimClashScreen> {
         ),
         elevation: 0,
         backgroundColor: theme.colorScheme.surface,
+        leading: isSingleClaim
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
       ),
       backgroundColor: theme.colorScheme.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Headline/Explainer header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Public Accountability Review',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                Text(
-                  'Comparing verbal and written claims from public authorities against verified transparency databases.',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Filters row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: _filterOptions.map((option) {
-                  final isSelected = _selectedFilter == option;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ChoiceChip(
-                      label: Text(option),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          setState(() {
-                            _selectedFilter = option;
-                          });
-                        }
-                      },
-                      selectedColor: theme.colorScheme.primaryContainer,
-                      labelStyle: TextStyle(
-                        color: isSelected
-                            ? theme.colorScheme.onPrimaryContainer
-                            : theme.colorScheme.onSurfaceVariant,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
+          if (!isSingleClaim) ...[
+            // Headline/Explainer header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Public Accountability Review',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
                     ),
-                  );
-                }).toList(),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    'Comparing verbal and written claims from public authorities against verified transparency databases.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 12.0),
+
+            // Filters row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: _filterOptions.map((option) {
+                    final isSelected = _selectedFilter == option;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ChoiceChip(
+                        label: Text(option),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() {
+                              _selectedFilter = option;
+                            });
+                          }
+                        },
+                        selectedColor: theme.colorScheme.primaryContainer,
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? theme.colorScheme.onPrimaryContainer
+                              : theme.colorScheme.onSurfaceVariant,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12.0),
+          ] else ...[
+            const SizedBox(height: 8.0),
+          ],
 
           // Main list container
           Expanded(
@@ -157,13 +177,14 @@ class _ClaimClashScreenState extends State<ClaimClashScreen> {
                                   children: col1,
                                 ),
                               ),
-                              const SizedBox(width: 16.0),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: col2,
+                              if (!isSingleClaim) const SizedBox(width: 16.0),
+                              if (!isSingleClaim)
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: col2,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         );

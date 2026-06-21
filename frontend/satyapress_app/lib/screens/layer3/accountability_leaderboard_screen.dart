@@ -72,7 +72,7 @@ class _AccountabilityLeaderboardScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Accountability Registry',
+          'Accountability Leaderboard',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.primary,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../data/mock_leaderboard_data.dart';
+import '../../widgets/donut_chart.dart';
+import '../../widgets/promise_tracker.dart';
+import '../../widgets/statement_timeline.dart';
 
 /// ProfileScreen presents a detailed accountability overview of a selected public figure.
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final LeaderboardEntry entry;
 
   const ProfileScreen({
@@ -11,17 +14,23 @@ class ProfileScreen extends StatelessWidget {
   });
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  int _activeTabIndex = 0; // 0 = Statements, 1 = Promises
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final rateColor = entry.falseClaimPercentage >= 60
-        ? const Color(0xFFEF4444)
-        : entry.falseClaimPercentage >= 35
-            ? const Color(0xFFF59E0B)
-            : const Color(0xFF10B981);
+    final entry = widget.entry;
+    final totalStatements = entry.trueCount + entry.falseCount + entry.misleadingCount;
+    final trackedSinceDate =
+        '${entry.trackedSince.year}-${entry.trackedSince.month.toString().padLeft(2, '0')}-${entry.trackedSince.day.toString().padLeft(2, '0')}';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Public Profile Audit'),
+        title: const Text('Accountability Record'),
         elevation: 0,
         backgroundColor: theme.colorScheme.surface,
         leading: IconButton(
@@ -36,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Profile Bio Header block
+              // 1. HEADER
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -91,6 +100,14 @@ class ProfileScreen extends StatelessWidget {
                             color: theme.colorScheme.outline,
                           ),
                         ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          'Tracked Since: $trackedSinceDate',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -98,9 +115,9 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24.0),
 
-              // 2. Metrics Analytics Grid
+              // 2. ACCOUNTABILITY OVERVIEW
               Text(
-                'VERIFICATION METRICS',
+                'ACCOUNTABILITY OVERVIEW',
                 style: theme.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.outline,
@@ -110,55 +127,64 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 10.0),
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final isWide = constraints.maxWidth > 500;
+                  final isWide = constraints.maxWidth > 550;
 
-                  final statCards = [
-                    _buildStatCard(
+                  final overviewCards = [
+                    _buildOverviewCountCard(
                       context,
-                      title: 'False Claim Rate',
-                      value: '${entry.falseClaimPercentage.toStringAsFixed(0)}%',
-                      color: rateColor,
-                      icon: Icons.dangerous_outlined,
-                    ),
-                    _buildStatCard(
-                      context,
-                      title: 'Audited Claims',
-                      value: '${entry.totalClaimsAudited}',
+                      title: 'Total Audited',
+                      value: '$totalStatements',
                       color: theme.colorScheme.primary,
-                      icon: Icons.fact_check_outlined,
                     ),
-                    _buildStatCard(
+                    _buildOverviewCountCard(
                       context,
-                      title: 'Integrity Grade',
-                      value: entry.grade,
-                      color: entry.grade.startsWith('A') || entry.grade.startsWith('B')
-                          ? const Color(0xFF10B981)
-                          : entry.grade.startsWith('C')
-                              ? const Color(0xFFF59E0B)
-                              : const Color(0xFFEF4444),
-                      icon: Icons.workspace_premium_outlined,
+                      title: 'True Claims',
+                      value: '${entry.trueCount}',
+                      color: const Color(0xFF10B981), // Green
+                    ),
+                    _buildOverviewCountCard(
+                      context,
+                      title: 'False Claims',
+                      value: '${entry.falseCount}',
+                      color: const Color(0xFFEF4444), // Red
+                    ),
+                    _buildOverviewCountCard(
+                      context,
+                      title: 'Misleading',
+                      value: '${entry.misleadingCount}',
+                      color: const Color(0xFFF59E0B), // Amber
                     ),
                   ];
 
                   if (isWide) {
                     return Row(
-                      children: statCards.map((card) => Expanded(child: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: card,
-                      ))).toList(),
+                      children: overviewCards
+                          .map((card) => Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: card,
+                                ),
+                              ))
+                          .toList(),
                     );
                   } else {
                     return Column(
                       children: [
                         Row(
                           children: [
-                            Expanded(child: statCards[0]),
-                            const SizedBox(width: 12.0),
-                            Expanded(child: statCards[1]),
+                            Expanded(child: overviewCards[0]),
+                            const SizedBox(width: 8.0),
+                            Expanded(child: overviewCards[1]),
                           ],
                         ),
-                        const SizedBox(height: 12.0),
-                        statCards[2],
+                        const SizedBox(height: 8.0),
+                        Row(
+                          children: [
+                            Expanded(child: overviewCards[2]),
+                            const SizedBox(width: 8.0),
+                            Expanded(child: overviewCards[3]),
+                          ],
+                        ),
                       ],
                     );
                   }
@@ -166,7 +192,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24.0),
 
-              // 3. Overall Reliability Meter
+              // 3. VISUALIZATION (DonutChart)
               Card(
                 elevation: 0.0,
                 shape: RoundedRectangleBorder(
@@ -182,42 +208,18 @@ class ProfileScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Truthfulness Index',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onSurface,
-                            ),
-                          ),
-                          Text(
-                            '${(100 - entry.falseClaimPercentage).toStringAsFixed(0)}% Reliable',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              color: const Color(0xFF10B981),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12.0),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4.0),
-                        child: LinearProgressIndicator(
-                          value: (100 - entry.falseClaimPercentage) / 100.0,
-                          color: const Color(0xFF10B981),
-                          backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.15),
-                          minHeight: 8.0,
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
                       Text(
-                        'This rating indicates the percentage of statements verified as true/mostly true by independent RTI and database cross-audits.',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          height: 1.3,
+                        'Audit Breakdown Proportions',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
                         ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      DonutChart(
+                        trueCount: entry.trueCount,
+                        falseCount: entry.falseCount,
+                        misleadingCount: entry.misleadingCount,
                       ),
                     ],
                   ),
@@ -225,88 +227,30 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24.0),
 
-              // 4. List of Audited Statements
-              Text(
-                'RECENT AUDITED STATEMENTS',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.outline,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 10.0),
-              if (entry.recentQuotes.isEmpty)
-                Text(
-                  'No recent quotes documented.',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
+              // 4. STATEMENTS & PROMISES TAB SWITCHER
+              Row(
+                children: [
+                  _buildTabButton(
+                    index: 0,
+                    label: 'Statements',
+                    icon: Icons.chat_bubble_outline_rounded,
                   ),
-                )
-              else
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: entry.recentQuotes.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12.0),
-                  itemBuilder: (context, index) {
-                    final quote = entry.recentQuotes[index];
-                    return Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.02),
-                        borderRadius: BorderRadius.circular(12.0),
-                        border: Border.all(
-                          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
-                          width: 1.0,
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.format_quote_rounded,
-                            color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                            size: 24.0,
-                          ),
-                          const SizedBox(width: 8.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '"$quote"',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface,
-                                    height: 1.4,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.gavel_rounded,
-                                      size: 12.0,
-                                      color: theme.colorScheme.outline,
-                                    ),
-                                    const SizedBox(width: 4.0),
-                                    Text(
-                                      'Audited under Ref #ST-2026-0$index',
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.outline,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                  const SizedBox(width: 12.0),
+                  _buildTabButton(
+                    index: 1,
+                    label: 'Promise Tracker',
+                    icon: Icons.fact_check_outlined,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16.0),
+
+              _activeTabIndex == 0
+                  ? StatementTimeline(
+                      statements: entry.statements,
+                      entry: entry,
+                    )
+                  : PromiseTracker(promises: entry.promises),
             ],
           ),
         ),
@@ -314,51 +258,80 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(
+  Widget _buildOverviewCountCard(
     BuildContext context, {
     required String title,
     required String value,
     required Color color,
-    required IconData icon,
   }) {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(14.0),
+      padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
-          color: color.withValues(alpha: 0.2),
+          color: color.withValues(alpha: 0.15),
           width: 1.0,
         ),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20.0, color: color),
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 2.0),
-                Text(
-                  value,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ],
+          Text(
+            title,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            value,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTabButton({
+    required int index,
+    required String label,
+    required IconData icon,
+  }) {
+    final theme = Theme.of(context);
+    final isSelected = _activeTabIndex == index;
+
+    return OutlinedButton.icon(
+      onPressed: () {
+        setState(() {
+          _activeTabIndex = index;
+        });
+      },
+      icon: Icon(icon, size: 16.0),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: isSelected
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurfaceVariant,
+        backgroundColor: isSelected
+            ? theme.colorScheme.primaryContainer
+            : Colors.transparent,
+        side: BorderSide(
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.outlineVariant,
+          width: 1.0,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
       ),
     );
   }
