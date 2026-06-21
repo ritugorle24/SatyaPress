@@ -4,6 +4,7 @@ import '../../widgets/bias_pill.dart';
 import '../../widgets/credibility_ring.dart';
 import '../../widgets/source_badge.dart';
 import '../../widgets/timestamp_label.dart';
+import '../../widgets/headline_manipulation_card.dart';
 
 /// ArticleDetailScreen presents full details of the article alongside integrity analysis.
 class ArticleDetailScreen extends StatelessWidget {
@@ -123,6 +124,18 @@ class ArticleDetailScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  HeadlineManipulationCard(
+                    originalHeadline: article.title,
+                    sensationalismScore: 0.78,
+                    manipulationReasons: const [
+                      'Loaded Language',
+                      'Emotional Trigger',
+                      'Clickbait',
+                    ],
+                    neutralRewrite:
+                        'Government announces new technology regulation framework',
                   ),
                   const SizedBox(height: 16.0),
                   // Bias Radar Spectrum Placeholder
