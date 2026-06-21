@@ -3,6 +3,7 @@ import '../../data/mock_buried_stories.dart';
 import '../../widgets/buried_story_card.dart';
 import '../../widgets/filter_chips.dart';
 import '../../widgets/sort_chips.dart';
+import 'buried_story_detail_screen.dart';
 
 /// BuriedStoriesScreen displays important stories with low mainstream media coverage.
 class BuriedStoriesScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _BuriedStoriesScreenState extends State<BuriedStoriesScreen> {
     'Politics',
     'Economy',
     'Environment',
-    'Tech'
+    'Tech',
   ];
   final List<String> _sortOptions = ['Most Ignored', 'Most Recent'];
 
@@ -51,7 +52,7 @@ class _BuriedStoriesScreenState extends State<BuriedStoriesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Coverage Gap Engine',
+          'Buried Stories',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.primary,
@@ -66,8 +67,10 @@ class _BuriedStoriesScreenState extends State<BuriedStoriesScreen> {
         children: [
           // Dashboard Header Explainer
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -80,7 +83,7 @@ class _BuriedStoriesScreenState extends State<BuriedStoriesScreen> {
                 ),
                 const SizedBox(height: 4.0),
                 Text(
-                  'Analysis of critical national topics receiving minimal reporting from mainstream media networks.',
+                  'Stories with high public relevance but low mainstream media coverage.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -143,8 +146,9 @@ class _BuriedStoriesScreenState extends State<BuriedStoriesScreen> {
                         Icon(
                           Icons.check_circle_outline_rounded,
                           size: 48.0,
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.5),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                         const SizedBox(height: 12.0),
                         Text(
@@ -161,7 +165,18 @@ class _BuriedStoriesScreenState extends State<BuriedStoriesScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     itemBuilder: (context, index) {
                       final story = results[index];
-                      return BuriedStoryCard(story: story);
+                      return BuriedStoryCard(
+                        story: story,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  BuriedStoryDetailScreen(story: story),
+                            ),
+                          );
+                        },
+                      );
                     },
                   ),
           ),
