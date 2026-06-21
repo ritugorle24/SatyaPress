@@ -14,6 +14,7 @@ logger = logging.getLogger("BiasClassifier")
 bias_pipeline = None
 
 def _load_pipeline():
+    """Lazy-load the BERT model only on first call to classify_bias()."""
     global bias_pipeline
     if bias_pipeline is not None:
         return
@@ -22,18 +23,15 @@ def _load_pipeline():
         logger.error("transformers library is not installed. Please install it using 'pip install transformers torch'.")
         return
         
-    # Load the model globally so it doesn't reload on every function call
     try:
-        logger.info("Loading politicalBiasBERT model (this may take a moment)...")
+        logger.info("Loading politicalBiasBERT model (this may take a moment on first run)...")
         bias_pipeline = pipeline("text-classification", model="bucketresearch/politicalBiasBERT")
         logger.info("Model loaded successfully.")
     except Exception as e:
         logger.error(f"Error loading politicalBiasBERT model: {e}")
         bias_pipeline = None
 
-# Eagerly attempt to load if transformers is available
-if TRANSFORMERS_AVAILABLE:
-    _load_pipeline()
+# DO NOT eagerly load at import time — only load when classify_bias() is called
 
 def classify_bias(text: str) -> dict:
     """
