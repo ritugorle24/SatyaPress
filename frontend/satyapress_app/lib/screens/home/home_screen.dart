@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../news_feed/news_feed_screen.dart';
 import '../search/search_screen.dart';
 import '../layer3/claim_clash_screen.dart';
+import '../layer3/accountability_leaderboard_screen.dart';
 
 /// HomeScreen contains the main navigation structure of SatyaPress.
 class HomeScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const SearchScreen(),
     const BuriedStoriesScreen(),
     const ClaimClashScreen(),
+    const AccountabilityLeaderboardScreen(),
   ];
 
   @override
@@ -49,6 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.compare_arrows_rounded),
             label: 'Clash',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.leaderboard_rounded),
+            label: 'Registry',
           ),
         ],
       ),
