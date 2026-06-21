@@ -31,6 +31,11 @@ class NewsArticle {
   final String sentiment;
   final double sentimentScore;
   final List<CompareCoverageItem> compareCoverage;
+  
+  // Sensationalism metrics for Headline Manipulation Detector
+  final double sensationalismScore;
+  final String neutralRewrite;
+  final List<String> manipulationReasons;
 
   const NewsArticle({
     required this.id,
@@ -49,6 +54,9 @@ class NewsArticle {
     required this.sentiment,
     required this.sentimentScore,
     required this.compareCoverage,
+    required this.sensationalismScore,
+    required this.neutralRewrite,
+    required this.manipulationReasons,
   });
 }
 
@@ -72,6 +80,9 @@ class MockNewsDatabase {
       framing: 'The event is presented as an authoritative policy intervention. The headline uses strong verbs to emphasize governance power, framing the law as a structured security measure.',
       sentiment: 'Neutral-Positive',
       sentimentScore: 0.62,
+      sensationalismScore: 0.38,
+      neutralRewrite: 'Government announces new digital framework regulating AI and social platforms',
+      manipulationReasons: ['Loaded Language', 'Exaggeration'],
       compareCoverage: [
         const CompareCoverageItem(
           sourceName: 'Left News Daily',
@@ -105,6 +116,9 @@ class MockNewsDatabase {
       framing: 'Presented with a positive focus on international unity and environmental responsibility, highlighting the scale of funding while casting light doubt on industrial follow-through.',
       sentiment: 'Positive',
       sentimentScore: 0.82,
+      sensationalismScore: 0.22,
+      neutralRewrite: 'Countries agree on \$100 billion annual climate funding at Global Summit',
+      manipulationReasons: ['Emotional Trigger'],
       compareCoverage: [
         const CompareCoverageItem(
           sourceName: 'Financial Outlook',
@@ -138,6 +152,9 @@ class MockNewsDatabase {
       framing: 'Framed around national development and efficiency achievements. Emphasis is placed heavily on productivity gains, with environmental concerns positioned secondary.',
       sentiment: 'Positive',
       sentimentScore: 0.75,
+      sensationalismScore: 0.78,
+      neutralRewrite: 'Highway Logistics Network launched to reduce trade transport costs',
+      manipulationReasons: ['Clickbait', 'Emotional Trigger', 'Loaded Language'],
       compareCoverage: [
         const CompareCoverageItem(
           sourceName: 'Eco-Justice Collective',
