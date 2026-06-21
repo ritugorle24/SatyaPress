@@ -7,6 +7,7 @@ import requests
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -26,6 +27,48 @@ try:
 except Exception as e:
     logger.error(f"Could not initialize Firebase Firestore client: {e}")
     db = None
+
+
+def extract_article_details(url: str) -> dict:
+    """
+    Fetches article HTML and extracts image_url and content.
+    Returns dict with 'image_url' and 'content' keys.
+    """
+    details = {"image_url": None, "content": None}
+    
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Extract image URL from og:image meta tag
+        og_image = soup.find('meta', property='og:image')
+        if og_image and og_image.get('content'):
+            details["image_url"] = og_image['content']
+        else:
+            # Fallback to first img tag
+            first_img = soup.find('img')
+            if first_img and first_img.get('src'):
+                details["image_url"] = first_img['src']
+        
+        # Extract content from description meta tag or first paragraph
+        description = soup.find('meta', attrs={'name': 'description'})
+        if description and description.get('content'):
+            details["content"] = description['content']
+        else:
+            # Fallback to first paragraph
+            first_p = soup.find('p')
+            if first_p:
+                details["content"] = first_p.get_text(strip=True)
+                
+    except Exception as e:
+        logger.warning(f"Failed to extract details from {url}: {e}")
+    
+    return details
 
 
 def scrape_hindu_india() -> list:
@@ -79,11 +122,16 @@ def scrape_hindu_india() -> list:
         if not headline or not link:
             continue
 
+        # Extract image_url and content from article page
+        article_details = extract_article_details(link)
+
         article_data = {
             "title": headline,
             "url": link,
             "source": "The Hindu",
-            "published_at": timestamp
+            "published_at": timestamp,
+            "image_url": article_details["image_url"],
+            "content": article_details["content"]
         }
 
         # 2-second delay as requested

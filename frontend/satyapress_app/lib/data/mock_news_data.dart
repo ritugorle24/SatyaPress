@@ -22,9 +22,9 @@ class NewsArticle {
   final String sourceName;
   final DateTime timestamp;
   final String? imageUrl;
-  final String bias;
-  final double biasScore;
-  final double credibilityScore;
+  final String? bias;
+  final double? biasScore;
+  final double? credibilityScore;
   final String category;
   final List<String> loadedWords;
   final String framing;
@@ -40,9 +40,9 @@ class NewsArticle {
     required this.sourceName,
     required this.timestamp,
     this.imageUrl,
-    required this.bias,
-    required this.biasScore,
-    required this.credibilityScore,
+    this.bias,
+    this.biasScore,
+    this.credibilityScore,
     required this.category,
     required this.loadedWords,
     required this.framing,

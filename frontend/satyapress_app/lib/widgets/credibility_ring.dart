@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// A radial ring showing article or source credibility rating.
 class CredibilityRing extends StatelessWidget {
   /// Credibility score (0.0 to 1.0).
-  final double score;
+  final double? score;
 
   /// Outer radius of the ring.
   final double radius;
@@ -19,9 +19,10 @@ class CredibilityRing extends StatelessWidget {
   });
 
   Color _getScoreColor() {
-    if (score >= 0.75) {
+    if (score == null) return Colors.grey;
+    if (score! >= 0.75) {
       return const Color(0xFF10B981); // Green (High credibility)
-    } else if (score >= 0.50) {
+    } else if (score! >= 0.50) {
       return const Color(0xFFF59E0B); // Amber (Medium credibility)
     } else {
       return const Color(0xFFEF4444); // Red (Low credibility)
@@ -31,7 +32,7 @@ class CredibilityRing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scoreColor = _getScoreColor();
-    final percentage = (score * 100).toStringAsFixed(0);
+    final percentage = score != null ? (score! * 100).toStringAsFixed(0) : '--';
 
     return SizedBox(
       width: radius * 2,
