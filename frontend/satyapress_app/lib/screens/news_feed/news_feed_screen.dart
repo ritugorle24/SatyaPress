@@ -32,7 +32,7 @@ class NewsFeedScreen extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       body: ListView.builder(
         itemCount: articles.length,
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),

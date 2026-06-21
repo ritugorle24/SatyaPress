@@ -10,10 +10,7 @@ class ArticleDetailScreen extends StatelessWidget {
   /// The article whose details and analysis are shown.
   final NewsArticle article;
 
-  const ArticleDetailScreen({
-    super.key,
-    required this.article,
-  });
+  const ArticleDetailScreen({super.key, required this.article});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +22,7 @@ class ArticleDetailScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: theme.colorScheme.surface,
       ),
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +33,8 @@ class ArticleDetailScreen extends StatelessWidget {
                 height: 220.0,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
               ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -84,7 +82,9 @@ class ArticleDetailScreen extends StatelessWidget {
                   // Credibility and Bias Summary Card
                   Card(
                     elevation: 0.0,
-                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
+                    color: theme.colorScheme.primaryContainer.withValues(
+                      alpha: 0.15,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
@@ -169,7 +169,9 @@ class ArticleDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Bias Radar Spectrum',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8.0),
         Container(
@@ -263,12 +265,16 @@ class ArticleDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Narrative Loaded Words',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8.0),
         Text(
           'Emotionally charged terms identified by AI classification:',
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 8.0),
         Wrap(
@@ -276,7 +282,10 @@ class ArticleDetailScreen extends StatelessWidget {
           runSpacing: 8.0,
           children: article.loadedWords.map((word) {
             return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 4.0,
+              ),
               decoration: BoxDecoration(
                 color: errorColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(6.0),
@@ -285,7 +294,11 @@ class ArticleDetailScreen extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.warning_amber_rounded, size: 12.0, color: errorColor),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 12.0,
+                    color: errorColor,
+                  ),
                   const SizedBox(width: 4.0),
                   Text(
                     word,
@@ -311,16 +324,22 @@ class ArticleDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Media Framing',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8.0),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.3,
+            ),
             borderRadius: BorderRadius.circular(12.0),
-            border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
           ),
           child: Text(
             article.framing,
@@ -337,14 +356,18 @@ class ArticleDetailScreen extends StatelessWidget {
   Widget _buildSentimentSection(BuildContext context) {
     final theme = Theme.of(context);
     final isPositive = article.sentiment.toLowerCase().contains('positive');
-    final sentimentColor = isPositive ? const Color(0xFF10B981) : Colors.blueGrey;
+    final sentimentColor = isPositive
+        ? const Color(0xFF10B981)
+        : Colors.blueGrey;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Tone & Sentiment',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8.0),
         Container(
@@ -357,7 +380,9 @@ class ArticleDetailScreen extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                isPositive ? Icons.sentiment_satisfied_alt : Icons.sentiment_neutral,
+                isPositive
+                    ? Icons.sentiment_satisfied_alt
+                    : Icons.sentiment_neutral,
                 size: 32.0,
                 color: sentimentColor,
               ),
@@ -397,12 +422,16 @@ class ArticleDetailScreen extends StatelessWidget {
       children: [
         Text(
           'Compare Perspectives',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 4.0),
         Text(
           'Cross-examine coverage of this story from alternative outlets:',
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 12.0),
         SizedBox(
@@ -420,7 +449,9 @@ class ArticleDetailScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                     side: BorderSide(
-                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.8),
+                      color: theme.colorScheme.outlineVariant.withValues(
+                        alpha: 0.8,
+                      ),
                     ),
                   ),
                   color: theme.colorScheme.surface,
@@ -433,9 +464,13 @@ class ArticleDetailScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6.0,
+                                vertical: 2.0,
+                              ),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                                color: theme.colorScheme.primaryContainer
+                                    .withValues(alpha: 0.3),
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
                               child: Text(
@@ -449,11 +484,16 @@ class ArticleDetailScreen extends StatelessWidget {
                             Text(
                               comparison.bias,
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: comparison.bias.toLowerCase().contains('left')
+                                color:
+                                    comparison.bias.toLowerCase().contains(
+                                      'left',
+                                    )
                                     ? const Color(0xFF1E3A8A)
-                                    : comparison.bias.toLowerCase().contains('right')
-                                        ? const Color(0xFFB91C1C)
-                                        : theme.colorScheme.secondary,
+                                    : comparison.bias.toLowerCase().contains(
+                                        'right',
+                                      )
+                                    ? const Color(0xFFB91C1C)
+                                    : theme.colorScheme.secondary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

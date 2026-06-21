@@ -19,17 +19,25 @@ class _SearchScreenState extends State<SearchScreen> {
   String _selectedSource = 'All';
 
   final List<String> _categories = ['All', 'Tech', 'Global', 'Infrastructure'];
-  final List<String> _sources = ['All', 'The Times of India', 'The Hindu', 'Republic World'];
+  final List<String> _sources = [
+    'All',
+    'The Times of India',
+    'The Hindu',
+    'Republic World',
+  ];
 
   List<NewsArticle> get _filteredArticles {
     return MockNewsDatabase.articles.where((article) {
-      final matchesSearch = article.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+      final matchesSearch =
+          article.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           article.snippet.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           article.content.toLowerCase().contains(_searchQuery.toLowerCase());
-      
-      final matchesCategory = _selectedCategory == 'All' || article.category == _selectedCategory;
-      
-      final matchesSource = _selectedSource == 'All' || article.sourceName == _selectedSource;
+
+      final matchesCategory =
+          _selectedCategory == 'All' || article.category == _selectedCategory;
+
+      final matchesSource =
+          _selectedSource == 'All' || article.sourceName == _selectedSource;
 
       return matchesSearch && matchesCategory && matchesSource;
     }).toList();
@@ -52,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
         elevation: 0,
         backgroundColor: theme.colorScheme.surface,
       ),
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -147,9 +155,13 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 Text(
                   'Results (${results.length})',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                if (_searchQuery.isNotEmpty || _selectedCategory != 'All' || _selectedSource != 'All')
+                if (_searchQuery.isNotEmpty ||
+                    _selectedCategory != 'All' ||
+                    _selectedSource != 'All')
                   TextButton(
                     onPressed: () {
                       setState(() {
@@ -174,7 +186,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         Icon(
                           Icons.find_in_page_rounded,
                           size: 48.0,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                         const SizedBox(height: 12.0),
                         Text(
@@ -206,7 +220,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ArticleDetailScreen(article: article),
+                                builder: (context) =>
+                                    ArticleDetailScreen(article: article),
                               ),
                             );
                           },
