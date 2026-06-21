@@ -7,6 +7,7 @@ import '../../widgets/source_coverage_card.dart';
 import '../../widgets/timeline_card.dart';
 import '../../widgets/ai_insight_card.dart';
 import '../../widgets/why_this_matters_card.dart';
+import 'rti_insight_screen.dart';
 
 /// BuriedStoryDetailScreen presents details and metadata for a neglected/buried news story.
 class BuriedStoryDetailScreen extends StatelessWidget {
@@ -84,6 +85,19 @@ class BuriedStoryDetailScreen extends StatelessWidget {
                         color: theme.colorScheme.onSurface,
                         height: 1.3,
                       ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    FilledButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => RTIInsightScreen(story: story),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.assignment_turned_in_rounded),
+                      label: const Text('View RTI Evidence'),
                     ),
                   ],
                 ),
