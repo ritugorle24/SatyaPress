@@ -1,3 +1,4 @@
+import '../layer2/buried_stories_screen.dart';
 import 'package:flutter/material.dart';
 import '../news_feed/news_feed_screen.dart';
 import '../search/search_screen.dart';
@@ -16,15 +17,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const NewsFeedScreen(),
     const SearchScreen(),
+    const BuriedStoriesScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
@@ -35,13 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.newspaper_rounded),
-            selectedIcon: Icon(Icons.newspaper_rounded),
             label: 'Feed',
           ),
           NavigationDestination(
             icon: Icon(Icons.search_rounded),
-            selectedIcon: Icon(Icons.search_rounded),
             label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.insights_rounded),
+            label: 'Coverage',
           ),
         ],
       ),
