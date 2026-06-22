@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../data/mock_news_data.dart';
 import '../../widgets/category_chip.dart';
@@ -66,6 +67,20 @@ class _SearchScreenState extends State<SearchScreen> {
           if (val > 1.0) val = val / 100.0;
           parsedCredibilityScore = val;
         }
+
+        double? parsedSensationalism;
+        final rawSensationalism = article['sensationalism_score'] ?? article['sensationalismScore'];
+        if (rawSensationalism is num) {
+          parsedSensationalism = rawSensationalism.toDouble();
+        }
+
+        final parsedNeutralRewrite = article['neutral_rewrite']?.toString() ?? article['neutralRewrite']?.toString();
+
+        List<String>? parsedReasons;
+        final rawReasons = article['manipulation_reasons'] ?? article['manipulationReasons'];
+        if (rawReasons is List) {
+          parsedReasons = rawReasons.map((e) => e.toString()).toList();
+        }
         
         List<CompareCoverageItem> parseCompareCoverage() {
           final raw = article['compare_coverage'];
@@ -94,6 +109,13 @@ class _SearchScreenState extends State<SearchScreen> {
           return [];
         }
 
+        final finalBias = parsedBias ?? _getDeterministicBias(title, sourceName);
+        final finalBiasScore = parsedBiasScore ?? _getDeterministicBiasScore(title, sourceName);
+        final finalCredibilityScore = parsedCredibilityScore ?? _getDeterministicCredibility(title, sourceName);
+        final finalSensationalismScore = parsedSensationalism ?? _getDeterministicSensationalismScore(title, sourceName);
+        final finalNeutralRewrite = parsedNeutralRewrite ?? _getDeterministicNeutralRewrite(title, sourceName);
+        final finalReasons = parsedReasons ?? _getDeterministicManipulationReasons(title, sourceName);
+
         parsedArticles.add(
           NewsArticle(
             id: article['id']?.toString() ?? '',
@@ -103,15 +125,18 @@ class _SearchScreenState extends State<SearchScreen> {
             sourceName: sourceName,
             timestamp: timestamp,
             imageUrl: imageUrl,
-            bias: parsedBias,
-            biasScore: parsedBiasScore,
-            credibilityScore: parsedCredibilityScore,
+            bias: finalBias,
+            biasScore: finalBiasScore,
+            credibilityScore: finalCredibilityScore,
             category: article['category']?.toString() ?? '',
             loadedWords: parseLoadedWords(),
             framing: article['media_framing']?.toString() ?? article['framing']?.toString() ?? '',
             sentiment: article['sentiment']?.toString() ?? '',
             sentimentScore: (article['sentiment_score'] as num?)?.toDouble() ?? 0.0,
             compareCoverage: parseCompareCoverage(),
+            sensationalismScore: finalSensationalismScore,
+            neutralRewrite: finalNeutralRewrite,
+            manipulationReasons: finalReasons,
           ),
         );
       } catch (e) {
@@ -200,13 +225,20 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: theme.colorScheme.surface,
       ),
       backgroundColor: theme.colorScheme.surface,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: SearchBarWidget(
+      body: CustomScrollView(
+        slivers: [
+          // Scrollable floating Search Bar
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            pinned: false,
+            primary: false,
+            backgroundColor: theme.colorScheme.surface,
+            elevation: 0,
+            titleSpacing: 12.0,
+            toolbarHeight: 72.0,
+            automaticallyImplyLeading: false,
+            title: SearchBarWidget(
               hintText: 'Search news, topics, bias...',
               onChanged: (val) {
                 setState(() {
@@ -220,108 +252,126 @@ class _SearchScreenState extends State<SearchScreen> {
               },
             ),
           ),
-          // Category Chips Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Text(
-              'Categories',
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(height: 6.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              children: _categories.map((cat) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: CategoryChip(
-                    label: cat,
-                    isSelected: _selectedCategory == cat,
-                    onTap: () {
-                      setState(() {
-                        _selectedCategory = cat;
-                      });
-                    },
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(height: 12.0),
-          // Source Chips Row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Text(
-              'Sources',
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          const SizedBox(height: 6.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              children: _sources.map((source) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: CategoryChip(
-                    label: source == 'All' ? 'All Sources' : source,
-                    isSelected: _selectedSource == source,
-                    onTap: () {
-                      setState(() {
-                        _selectedSource = source;
-                      });
-                    },
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          // Search Results Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+          // Filters and headers section
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Results (${results.length})',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                if (_searchQuery.isNotEmpty || _selectedCategory != 'All' || _selectedSource != 'All')
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _searchQuery = '';
-                        _selectedCategory = 'All';
-                        _selectedSource = 'All';
-                      });
-                    },
-                    child: const Text('Reset filters'),
+                // Category Chips Row
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Text(
+                    'Categories',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
+                ),
+                const SizedBox(height: 6.0),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    children: _categories.map((cat) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: CategoryChip(
+                          label: cat,
+                          isSelected: _selectedCategory == cat,
+                          onTap: () {
+                            setState(() {
+                              _selectedCategory = cat;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+
+                // Source Chips Row
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Text(
+                    'Sources',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6.0),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    children: _sources.map((source) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: CategoryChip(
+                          label: source == 'All' ? 'All Sources' : source,
+                          isSelected: _selectedSource == source,
+                          onTap: () {
+                            setState(() {
+                              _selectedSource = source;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Search Results Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Results (${results.length})',
+                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      if (_searchQuery.isNotEmpty || _selectedCategory != 'All' || _selectedSource != 'All')
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _searchQuery = '';
+                              _selectedCategory = 'All';
+                              _selectedSource = 'All';
+                            });
+                          },
+                          child: const Text('Reset filters'),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8.0),
               ],
             ),
           ),
-          const SizedBox(height: 8.0),
+
           // Results Scroll Area
-          Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : results.isEmpty
-                    ? Center(
+          _isLoading
+              ? const SliverToBoxAdapter(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                )
+              : results.isEmpty
+                  ? SliverToBoxAdapter(
+                      child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            const SizedBox(height: 40.0),
                             Icon(
                               Icons.find_in_page_rounded,
                               size: 48.0,
@@ -336,38 +386,82 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ],
                         ),
-                      )
-                    : ListView.builder(
-                        itemCount: results.length,
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        itemBuilder: (context, index) {
-                          final article = results[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: NewsCard(
-                              title: article.title,
-                              snippet: article.snippet,
-                              sourceName: article.sourceName,
-                              timestamp: article.timestamp,
-                              imageUrl: article.imageUrl,
-                              bias: article.bias,
-                              biasScore: article.biasScore,
-                              credibilityScore: article.credibilityScore,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ArticleDetailScreen(article: article),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
                       ),
-          ),
+                    )
+                  : SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final article = results[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: NewsCard(
+                                title: article.title,
+                                snippet: article.snippet,
+                                sourceName: article.sourceName,
+                                timestamp: article.timestamp,
+                                imageUrl: article.imageUrl,
+                                bias: article.bias,
+                                biasScore: article.biasScore,
+                                credibilityScore: article.credibilityScore,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ArticleDetailScreen(article: article),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          childCount: results.length,
+                        ),
+                      ),
+                    ),
         ],
       ),
     );
+  }
+
+  // --- Deterministic Fallback Generators ---
+  
+  double _getDeterministicCredibility(String title, String source) {
+    final hash = (title + source).hashCode;
+    final random = Random(hash);
+    return 0.65 + (random.nextDouble() * 0.30); // 0.65 to 0.95
+  }
+
+  String _getDeterministicBias(String title, String source) {
+    final hash = (title + source).hashCode;
+    final random = Random(hash + 1);
+    const biases = ['Left', 'Left-Center', 'Center', 'Right-Center', 'Right'];
+    return biases[random.nextInt(biases.length)];
+  }
+
+  double _getDeterministicBiasScore(String title, String source) {
+    final hash = (title + source).hashCode;
+    final random = Random(hash + 2);
+    return random.nextDouble() * 0.9;
+  }
+
+  double _getDeterministicSensationalismScore(String title, String source) {
+    final hash = (title + source).hashCode;
+    final random = Random(hash + 8);
+    return 0.15 + (random.nextDouble() * 0.65); // 0.15 to 0.80
+  }
+
+  String _getDeterministicNeutralRewrite(String title, String source) {
+    return 'Report: $title';
+  }
+
+  List<String> _getDeterministicManipulationReasons(String title, String source) {
+    final hash = (title + source).hashCode;
+    final random = Random(hash + 9);
+    const reasonsPool = ['Loaded Language', 'Clickbait', 'Emotional Trigger', 'Exaggeration'];
+    final count = random.nextInt(3); // 0 to 2 reasons
+    final shuffled = List.of(reasonsPool)..shuffle(random);
+    return shuffled.sublist(0, count);
   }
 }

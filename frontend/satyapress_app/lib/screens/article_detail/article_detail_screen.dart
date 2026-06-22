@@ -5,6 +5,7 @@ import '../../widgets/credibility_ring.dart';
 import '../../widgets/source_badge.dart';
 import '../../widgets/timestamp_label.dart';
 import '../../widgets/source_fallback_image.dart';
+import '../../widgets/headline_manipulation_card.dart';
 
 /// ArticleDetailScreen presents full details of the article alongside premium AI integrity analysis.
 class ArticleDetailScreen extends StatelessWidget {
@@ -231,6 +232,14 @@ class ArticleDetailScreen extends StatelessWidget {
             _buildCredibilityCard(context),
             const SizedBox(height: 16.0),
             
+            HeadlineManipulationCard(
+              originalHeadline: article.title,
+              sensationalismScore: article.sensationalismScore,
+              manipulationReasons: article.manipulationReasons,
+              neutralRewrite: article.neutralRewrite,
+            ),
+            const SizedBox(height: 16.0),
+            
             _buildBiasRadarCard(context),
             const SizedBox(height: 16.0),
             
@@ -260,7 +269,7 @@ class ArticleDetailScreen extends StatelessWidget {
 
   Widget _buildCredibilityCard(BuildContext context) {
     final theme = Theme.of(context);
-    final score = article.credibilityScore ?? 0.70;
+    final score = article.credibilityScore;
     
     return Card(
       elevation: 2,
@@ -314,8 +323,8 @@ class ArticleDetailScreen extends StatelessWidget {
 
   Widget _buildBiasRadarCard(BuildContext context) {
     final theme = Theme.of(context);
-    final bias = article.bias ?? _getDeterministicBias(article.title, article.sourceName);
-    final biasScore = article.biasScore ?? _getDeterministicBiasScore(article.title, article.sourceName);
+    final bias = article.bias;
+    final biasScore = article.biasScore;
 
     return Card(
       elevation: 2,
@@ -416,8 +425,8 @@ class ArticleDetailScreen extends StatelessWidget {
   }
 
   Alignment _getBiasAlignment() {
-    final bias = article.bias ?? _getDeterministicBias(article.title, article.sourceName);
-    final score = article.biasScore ?? _getDeterministicBiasScore(article.title, article.sourceName);
+    final bias = article.bias;
+    final score = article.biasScore;
     final lowerBias = bias.toLowerCase();
     if (lowerBias.contains('left')) return Alignment(-score, 0.0);
     if (lowerBias.contains('right')) return Alignment(score, 0.0);
@@ -693,10 +702,12 @@ class ArticleDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 8.0),
                             Text(
-                              _getCredibilityText(article.credibilityScore ?? _getDeterministicCredibility(article.title, article.sourceName)),
+                              _getCredibilityText(comparison.credibilityScore),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const Spacer(),
                             Row(
@@ -706,7 +717,7 @@ class ArticleDetailScreen extends StatelessWidget {
                                   children: [
                                     const SizedBox(width: 4),
                                     Text(
-                                      '${((article.credibilityScore ?? _getDeterministicCredibility(article.title, article.sourceName)) * 100).toStringAsFixed(0)}% Trust',
+                                      '${(comparison.credibilityScore * 100).toStringAsFixed(0)}% Trust',
                                       style: theme.textTheme.labelSmall?.copyWith(
                                         color: theme.colorScheme.onSurfaceVariant,
                                         fontWeight: FontWeight.w600,
@@ -715,9 +726,9 @@ class ArticleDetailScreen extends StatelessWidget {
                                   ],
                                 ),
                                 CredibilityRing(
-                                  score: article.credibilityScore ?? _getDeterministicCredibility(article.title, article.sourceName),
-                                  radius: 30.0,
-                                  strokeWidth: 5.0,
+                                  score: comparison.credibilityScore,
+                                  radius: 26.0,
+                                  strokeWidth: 4.0,
                                 ),
                               ],
                             ),
@@ -766,24 +777,7 @@ class ArticleDetailScreen extends StatelessWidget {
 
   // --- Deterministic Fallback Generators ---
   
-  double _getDeterministicCredibility(String title, String source) {
-    int hash = (title + source).hashCode;
-    var random = Random(hash);
-    return 0.65 + (random.nextDouble() * 0.30); // 0.65 to 0.95
-  }
 
-  String _getDeterministicBias(String title, String source) {
-    int hash = (title + source).hashCode;
-    var random = Random(hash + 1);
-    const biases = ['Left', 'Left-Center', 'Center', 'Right-Center', 'Right'];
-    return biases[random.nextInt(biases.length)];
-  }
-
-  double _getDeterministicBiasScore(String title, String source) {
-    int hash = (title + source).hashCode;
-    var random = Random(hash + 2);
-    return random.nextDouble() * 0.9;
-  }
 
   List<String> _getDeterministicLoadedWords(String title, String source) {
     int hash = (title + source).hashCode;

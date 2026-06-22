@@ -7,7 +7,6 @@ import requests
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -29,46 +28,20 @@ except Exception as e:
     db = None
 
 
-def extract_article_details(url: str) -> dict:
-    """
-    Fetches article HTML and extracts image_url and content.
-    Returns dict with 'image_url' and 'content' keys.
-    """
-    details = {"image_url": None, "content": None}
+def classify_category(headline: str) -> str:
+    import re
+    headline_lower = headline.lower()
+    tech_keywords = ['tech', 'digital', 'ai', 'cyber', 'internet', 'software']
+    global_keywords = ['world', 'global', 'international', 'china', 'pakistan', 'russia']
+    infra_keywords = ['road', 'highway', 'bridge', 'infrastructure', 'construction', 'corridor']
     
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Extract image URL from og:image meta tag
-        og_image = soup.find('meta', property='og:image')
-        if og_image and og_image.get('content'):
-            details["image_url"] = og_image['content']
-        else:
-            # Fallback to first img tag
-            first_img = soup.find('img')
-            if first_img and first_img.get('src'):
-                details["image_url"] = first_img['src']
-        
-        # Extract content from description meta tag or first paragraph
-        description = soup.find('meta', attrs={'name': 'description'})
-        if description and description.get('content'):
-            details["content"] = description['content']
-        else:
-            # Fallback to first paragraph
-            first_p = soup.find('p')
-            if first_p:
-                details["content"] = first_p.get_text(strip=True)
-                
-    except Exception as e:
-        logger.warning(f"Failed to extract details from {url}: {e}")
-    
-    return details
+    if any(kw in headline_lower for kw in tech_keywords):
+        return 'Tech'
+    if any(kw in headline_lower for kw in global_keywords) or re.search(r'\bUS\b|\bU\.S\.\b', headline):
+        return 'Global'
+    if any(kw in headline_lower for kw in infra_keywords):
+        return 'Infrastructure'
+    return 'General'
 
 
 def scrape_ie_india() -> list:
@@ -122,16 +95,12 @@ def scrape_ie_india() -> list:
         if not headline or not link:
             continue
 
-        # Extract image_url and content from article page
-        article_details = extract_article_details(link)
-
         article_data = {
             "title": headline,
             "url": link,
             "source": "Indian Express",
             "published_at": timestamp,
-            "image_url": article_details["image_url"],
-            "content": article_details["content"]
+            "category": classify_category(headline)
         }
 
         # 2-second delay as requested

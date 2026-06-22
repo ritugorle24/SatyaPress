@@ -1,6 +1,8 @@
+import '../layer2/buried_stories_screen.dart';
 import 'package:flutter/material.dart';
 import '../news_feed/news_feed_screen.dart';
-import '../search/search_screen.dart';
+import '../layer3/claim_clash_screen.dart';
+import '../layer3/accountability_leaderboard_screen.dart';
 
 /// HomeScreen contains the main navigation structure of SatyaPress.
 class HomeScreen extends StatefulWidget {
@@ -15,35 +17,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const NewsFeedScreen(),
-    const SearchScreen(),
+    const BuriedStoriesScreen(),
+    const ClaimClashScreen(),
+    const AccountabilityLeaderboardScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.newspaper_rounded),
-            selectedIcon: Icon(Icons.newspaper_rounded),
-            label: 'Feed',
+      body: IndexedStack(index: _currentIndex, children: _screens),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.search_rounded),
-            selectedIcon: Icon(Icons.search_rounded),
-            label: 'Search',
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.newspaper_rounded),
+                label: 'Feed',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.insights_rounded),
+                label: 'Buried Stories',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.compare_arrows_rounded),
+                label: 'Claim Clash',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.leaderboard_rounded),
+                label: 'Accountability Leaderboard',
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
