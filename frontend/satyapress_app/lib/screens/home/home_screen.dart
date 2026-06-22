@@ -26,31 +26,48 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.newspaper_rounded),
-            label: 'Feed',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
           ),
-          NavigationDestination(
-            icon: Icon(Icons.insights_rounded),
-            label: 'Buried Stories',
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.newspaper_rounded),
+                label: 'Feed',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.insights_rounded),
+                label: 'Buried Stories',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.compare_arrows_rounded),
+                label: 'Claim Clash',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.leaderboard_rounded),
+                label: 'Accountability Leaderboard',
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.compare_arrows_rounded),
-            label: 'Claim Clash',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.leaderboard_rounded),
-            label: 'Accountability Leaderboard',
-          ),
-        ],
+        ),
       ),
     );
   }

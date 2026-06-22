@@ -15,7 +15,11 @@ class RTIInsightScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final rtiFinding = MockRTIDatabase.getByStoryId(story.id);
+    final rtiFinding = MockRTIDatabase.getByStoryId(
+      story.id,
+      title: story.headline,
+      category: story.category,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -97,47 +101,13 @@ class RTIInsightScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20.0),
 
-                  // Display the RTI record or a fallback message
-                  if (rtiFinding == null)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.folder_off_rounded,
-                              size: 64.0,
-                              color: theme.colorScheme.outline.withValues(alpha: 0.4),
-                            ),
-                            const SizedBox(height: 16.0),
-                            Text(
-                              'RTI Evidence Not Found',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              'Official transparency records for this story are pending validation or release.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    // Main layout (Responsive widths support)
-                    Center(
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 800.0),
-                        child: RTICard(finding: rtiFinding),
-                      ),
+                  // Main layout (Responsive widths support)
+                  Center(
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 800.0),
+                      child: RTICard(finding: rtiFinding),
                     ),
+                  ),
                 ],
               ),
             );

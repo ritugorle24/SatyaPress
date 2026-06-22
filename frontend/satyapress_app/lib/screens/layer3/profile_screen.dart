@@ -24,7 +24,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final entry = widget.entry;
-    final totalStatements = entry.trueCount + entry.falseCount + entry.misleadingCount;
+    final totalStatements = entry.statements.length;
+    final trueCount = entry.statements.where((s) => s.verdict.toLowerCase().trim() == 'true').length;
+    final falseCount = entry.statements.where((s) => s.verdict.toLowerCase().trim() == 'false').length;
+    final misleadingCount = entry.statements.where((s) => s.verdict.toLowerCase().trim() == 'misleading').length;
     final trackedSinceDate =
         '${entry.trackedSince.year}-${entry.trackedSince.month.toString().padLeft(2, '0')}-${entry.trackedSince.day.toString().padLeft(2, '0')}';
 
@@ -139,19 +142,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildOverviewCountCard(
                       context,
                       title: 'True Claims',
-                      value: '${entry.trueCount}',
+                      value: '$trueCount',
                       color: const Color(0xFF10B981), // Green
                     ),
                     _buildOverviewCountCard(
                       context,
                       title: 'False Claims',
-                      value: '${entry.falseCount}',
+                      value: '$falseCount',
                       color: const Color(0xFFEF4444), // Red
                     ),
                     _buildOverviewCountCard(
                       context,
                       title: 'Misleading',
-                      value: '${entry.misleadingCount}',
+                      value: '$misleadingCount',
                       color: const Color(0xFFF59E0B), // Amber
                     ),
                   ];
@@ -217,9 +220,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 16.0),
                       DonutChart(
-                        trueCount: entry.trueCount,
-                        falseCount: entry.falseCount,
-                        misleadingCount: entry.misleadingCount,
+                        trueCount: trueCount,
+                        falseCount: falseCount,
+                        misleadingCount: misleadingCount,
                       ),
                     ],
                   ),

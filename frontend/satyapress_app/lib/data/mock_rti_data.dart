@@ -166,12 +166,49 @@ class MockRTIDatabase {
     ),
   ];
 
-  /// Retrieves the RTI finding matching a specific story ID.
-  static RTIFinding? getByStoryId(String storyId) {
+  /// Retrieves the RTI finding matching a specific story ID or generates a deterministic fallback.
+  static RTIFinding getByStoryId(String storyId, {String? title, String? category, String? source}) {
     try {
       return rtiFindings.firstWhere((finding) => finding.relatedStoryId == storyId);
     } catch (_) {
-      return null;
+      final cleanTitle = title ?? "Buried Story Investigation";
+      final cleanCategory = category ?? "Governance";
+      final cleanSource = source ?? "Local Sources";
+      final int hash = storyId.hashCode.abs();
+      final refNum = "RTI/${cleanCategory.toUpperCase().replaceAll(' ', '')}/2026/${(hash % 9000) + 1000}";
+      
+      final fact = "Internal correspondence obtained under the RTI Act confirms that multiple audit reports regarding '$cleanTitle' were submitted to the division head, but official regulatory action was delayed.";
+      final whyItMatters = "Proves that decision-makers had direct visibility into the situation at an early stage, but public disclosure was deferred.";
+      final officialSource = "Ministry of ${cleanCategory.isEmpty ? 'Governance' : cleanCategory} ($cleanSource Archive), File Ref #RTI-${hash % 1000}";
+      
+      final timeline = [
+        RTITimelineEvent(
+          date: "2026-03-${(hash % 10) + 10}",
+          detail: "RTI request filed seeking documents on $cleanTitle.",
+        ),
+        RTITimelineEvent(
+          date: "2026-04-${(hash % 10) + 10}",
+          detail: "Initial response from the Public Information Officer was incomplete. First appeal filed.",
+        ),
+        RTITimelineEvent(
+          date: "2026-05-${(hash % 10) + 10}",
+          detail: "State Information Commission ordered the release of the unredacted files within 15 days.",
+        ),
+        RTITimelineEvent(
+          date: "2026-06-12",
+          detail: "Documents officially released to the applicant, validating the lack of mainstream reporting.",
+        ),
+      ];
+
+      return RTIFinding(
+        referenceNumber: refNum,
+        fact: fact,
+        relatedStoryId: storyId,
+        relatedStoryTitle: cleanTitle,
+        whyItMatters: whyItMatters,
+        officialSource: officialSource,
+        timeline: timeline,
+      );
     }
   }
 }

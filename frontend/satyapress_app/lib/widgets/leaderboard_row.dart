@@ -135,7 +135,7 @@ class LeaderboardRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2.0),
                   Text(
-                    '${entry.totalClaimsAudited} Audits',
+                    '${entry.statements.length} Audits',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

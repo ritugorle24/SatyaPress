@@ -100,25 +100,104 @@ MOCK_BURIED_STORIES = [
 ]
 
 MOCK_ACCOUNTABILITY = [
+    # Republic TV anchors
     {
-        "id": "acc_1",
-        "publisher": "National Daily Times",
-        "bias_score": 0.28,
-        "factual_accuracy": "High",
-        "retraction_count": 2,
-        "sensationalism_index": "Low",
-        "main_violations": [],
-        "last_updated": "2026-06-20T00:00:00Z"
+        "id": "acc_arnab",
+        "publisher": "Arnab Goswami",
+        "channel": "Republic TV",
+        "designation": "Anchor",
+        "bias_score": 0.82,
+        "factual_accuracy": "Low",
+        "retraction_count": 20,
+        "sensationalism_index": "High",
+        "main_violations": ["Sensationalized headlines", "Loud debates"],
+        "last_updated": "2025-01-15T00:00:00Z"
     },
     {
-        "id": "acc_2",
-        "publisher": "Republic Broadcast Network",
-        "bias_score": 0.72,
+        "id": "acc_anjana",
+        "publisher": "Anjana Om Kashyap",
+        "channel": "Republic TV",
+        "designation": "Anchor",
+        "bias_score": 0.76,
+        "factual_accuracy": "Mixed",
+        "retraction_count": 12,
+        "sensationalism_index": "High",
+        "main_violations": ["Sensationalized reporting"],
+        "last_updated": "2025-02-10T00:00:00Z"
+    },
+    {
+        "id": "acc_rubika",
+        "publisher": "Rubika Liyaquat",
+        "channel": "Republic TV",
+        "designation": "Anchor",
+        "bias_score": 0.78,
         "factual_accuracy": "Mixed",
         "retraction_count": 14,
         "sensationalism_index": "High",
-        "main_violations": ["Sensationalized headlines", "Unverified social media reporting"],
-        "last_updated": "2026-06-20T00:00:00Z"
+        "main_violations": ["Biased anchoring"],
+        "last_updated": "2025-03-05T00:00:00Z"
+    },
+    # NDTV anchors
+    {
+        "id": "acc_ravish",
+        "publisher": "Ravish Kumar",
+        "channel": "NDTV",
+        "designation": "Anchor",
+        "bias_score": 0.15,
+        "factual_accuracy": "High",
+        "retraction_count": 3,
+        "sensationalism_index": "Low",
+        "main_violations": [],
+        "last_updated": "2025-08-01T00:00:00Z"
+    },
+    {
+        "id": "acc_nidhi",
+        "publisher": "Nidhi Razdan",
+        "channel": "NDTV",
+        "designation": "Anchor",
+        "bias_score": 0.25,
+        "factual_accuracy": "High",
+        "retraction_count": 4,
+        "sensationalism_index": "Low",
+        "main_violations": [],
+        "last_updated": "2025-04-18T00:00:00Z"
+    },
+    # Politicians
+    {
+        "id": "acc_smriti",
+        "publisher": "Smriti Irani",
+        "channel": "BJP",
+        "designation": "Politician",
+        "bias_score": 0.65,
+        "factual_accuracy": "Mixed",
+        "retraction_count": 9,
+        "sensationalism_index": "Medium",
+        "main_violations": ["Misleading claims about public projects"],
+        "last_updated": "2025-03-10T00:00:00Z"
+    },
+    {
+        "id": "acc_kapil",
+        "publisher": "Kapil Sibal",
+        "channel": "Independent / Congress",
+        "designation": "Politician",
+        "bias_score": 0.45,
+        "factual_accuracy": "Mixed",
+        "retraction_count": 5,
+        "sensationalism_index": "Low",
+        "main_violations": [],
+        "last_updated": "2025-05-20T00:00:00Z"
+    },
+    {
+        "id": "acc_amit",
+        "publisher": "Amit Shah",
+        "channel": "BJP",
+        "designation": "Politician",
+        "bias_score": 0.70,
+        "factual_accuracy": "Mixed",
+        "retraction_count": 15,
+        "sensationalism_index": "Medium",
+        "main_violations": ["Exaggerated campaign claims"],
+        "last_updated": "2025-06-01T00:00:00Z"
     }
 ]
 
@@ -247,31 +326,8 @@ def get_accountability():
             logger.info(f"Returned {len(acc)} from accountability collection")
             return acc
             
-        logger.info("accountability collection empty, generating dynamically from articles...")
-        articles = get_firestore_collection("articles", [])
-        logger.info(f"Checked {len(articles)} articles for accountability keywords")
-        
-        if not articles:
-            return MOCK_ACCOUNTABILITY
-            
-        keywords = ["scam", "corruption", "court", "arrest", "probe", "investigation", "police", "government", "minister", "complaint", "case", "fraud", "expose", "allegation"]
-        
-        results = []
-        for a in articles:
-            title = a.get("title", "").lower()
-            matched_kws = [kw for kw in keywords if kw in title]
-            if matched_kws:
-                results.append({
-                    "headline": a.get("title", ""),
-                    "source": a.get("source", "Unknown"),
-                    "url": a.get("url", ""),
-                    "timestamp": a.get("published_at", ""),
-                    "reason": f"Matches accountability keywords: {', '.join(matched_kws)}"
-                })
-                
-        results = results[:20]
-        logger.info(f"Dynamically generated and returned {len(results)} accountability articles")
-        return results
+        logger.info("accountability collection empty, returning mock accountability data.")
+        return MOCK_ACCOUNTABILITY
         
     except Exception as e:
         logger.error(f"Error in /accountability: {e}")

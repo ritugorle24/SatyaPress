@@ -27,6 +27,23 @@ except Exception as e:
     logger.error(f"Could not initialize Firebase Firestore client: {e}")
     db = None
 
+
+def classify_category(headline: str) -> str:
+    import re
+    headline_lower = headline.lower()
+    tech_keywords = ['tech', 'digital', 'ai', 'cyber', 'internet', 'software']
+    global_keywords = ['world', 'global', 'international', 'china', 'pakistan', 'russia']
+    infra_keywords = ['road', 'highway', 'bridge', 'infrastructure', 'construction', 'corridor']
+    
+    if any(kw in headline_lower for kw in tech_keywords):
+        return 'Tech'
+    if any(kw in headline_lower for kw in global_keywords) or re.search(r'\bUS\b|\bU\.S\.\b', headline):
+        return 'Global'
+    if any(kw in headline_lower for kw in infra_keywords):
+        return 'Infrastructure'
+    return 'General'
+
+
 def scrape_ndtv_india() -> list:
     """
     Scrapes the NDTV India News section using the public RSS feed.
@@ -83,7 +100,8 @@ def scrape_ndtv_india() -> list:
             "title": headline,
             "url": link,
             "source": "NDTV",
-            "published_at": timestamp
+            "published_at": timestamp,
+            "category": classify_category(headline)
         }
 
         # 2-second delay as requested
