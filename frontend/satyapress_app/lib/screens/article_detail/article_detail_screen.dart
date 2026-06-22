@@ -299,7 +299,7 @@ class ArticleDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8.0),
                   Text(
-                    _getCredibilityText(score),
+                    _getCredibilityText(score ?? 0.0),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
                       height: 1.4,
@@ -408,7 +408,7 @@ class ArticleDetailScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'This article exhibits a bias score of ${biasScore.toStringAsFixed(2)} towards $bias.',
+                      'This article exhibits a bias score of ${(biasScore ?? 0.0).toStringAsFixed(2)} towards ${bias ?? 'Unknown'}.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
@@ -426,7 +426,8 @@ class ArticleDetailScreen extends StatelessWidget {
 
   Alignment _getBiasAlignment() {
     final bias = article.bias;
-    final score = article.biasScore;
+    final score = article.biasScore ?? 0.0;
+    if (bias == null) return Alignment.center;
     final lowerBias = bias.toLowerCase();
     if (lowerBias.contains('left')) return Alignment(-score, 0.0);
     if (lowerBias.contains('right')) return Alignment(score, 0.0);

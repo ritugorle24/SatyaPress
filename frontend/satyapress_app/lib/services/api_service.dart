@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = kIsWeb ? 'http://localhost:8000' : 'http://10.19.2.66:8000';
+  static const String baseUrl = 'https://satyapress.onrender.com';
 
   static Future<List<Map<String, dynamic>>> fetchArticles() async {
     try {
